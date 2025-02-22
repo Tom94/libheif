@@ -233,7 +233,7 @@ if (APPLE)
 	    LINK_FLAGS "-Wl,-compatibility_version,${MACOS_COMPATIBLE_VERSION}")
 endif ()
 
-if (BUILD_FRAMEWORK) 
+if (BUILD_FRAMEWORK)
   set_target_properties(heif PROPERTIES
     FRAMEWORK TRUE
     FRAMEWORK_VERSION "${PACKAGE_VERSION}"
@@ -250,10 +250,17 @@ if (BUILD_FRAMEWORK)
     MACOSX_RPATH TRUE)
 endif()
 
-target_compile_definitions(heif
-        PUBLIC
-        LIBHEIF_EXPORTS
-        HAVE_VISIBILITY)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(heif
+                               PUBLIC
+                                   LIBHEIF_EXPORTS
+                                   HAVE_VISIBILITY)
+else()
+    target_compile_definitions(heif
+                               PUBLIC
+                                   LIBHEIF_STATIC_BUILD
+                                   LIBDE265_STATIC_BUILD)
+endif()
 
 if (PLUGIN_LOADING_SUPPORTED_AND_ENABLED)
     target_compile_definitions(heif PRIVATE ENABLE_PLUGIN_LOADING=1)
