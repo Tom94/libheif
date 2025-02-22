@@ -24,10 +24,17 @@ set_target_properties(heifio
         VERSION ${PROJECT_VERSION})
 
 
-target_compile_definitions(heifio
-        PUBLIC
-        LIBHEIF_EXPORTS
-        HAVE_VISIBILITY)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(heifio
+                            PUBLIC
+                                LIBHEIF_EXPORTS
+                                HAVE_VISIBILITY)
+else()
+    target_compile_definitions(heifio
+                               PUBLIC
+                                   LIBHEIF_STATIC_BUILD
+                                   LIBDE265_STATIC_BUILD)
+endif()
 
 find_package(TIFF)
 if (TIFF_FOUND)
