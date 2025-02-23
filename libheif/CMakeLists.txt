@@ -352,19 +352,21 @@ target_sources(heif PRIVATE
 
 write_basic_package_version_file(${PROJECT_NAME}-config-version.cmake COMPATIBILITY ExactVersion)
 
-install(TARGETS heif EXPORT ${PROJECT_NAME}-config
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        FRAMEWORK DESTINATION Library/Frameworks COMPONENT runtime OPTIONAL
-        )
+if (WITH_INSTALL)
+    install(TARGETS heif EXPORT ${PROJECT_NAME}-config
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            FRAMEWORK DESTINATION Library/Frameworks COMPONENT runtime OPTIONAL
+            )
 
-install(FILES ${libheif_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+    install(FILES ${libheif_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-install(EXPORT ${PROJECT_NAME}-config DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+    install(EXPORT ${PROJECT_NAME}-config DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake DESTINATION
-        "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake DESTINATION
+            "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+endif()
 
 
 # --- on Windows, copy the DLL into the executable directory for easier development
