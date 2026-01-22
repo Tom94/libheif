@@ -352,3 +352,98 @@ void heif_image_handle_set_gimi_component_content_id(heif_image_handle* handle,
   }
 #endif
 }
+
+
+// ------------------------- gain map images -------------------------
+
+struct heif_error heif_image_handle_get_gain_map_image_handle(
+    const struct heif_image_handle* handle, struct heif_image_handle** gain_map_handle) {
+  if (!gain_map_handle) {
+    return {heif_error_Usage_error, heif_suberror_Null_pointer_argument,
+            "NULL gain_map_handle passed to heif_image_handle_get_gain_map_image_handle()"};
+  }
+
+  std::shared_ptr<ImageItem> gain_map_image = handle->image->get_gain_map();
+  if (!gain_map_image) {
+    Error err(heif_error_Usage_error, heif_suberror_Nonexisting_item_referenced,
+              "base image handle is not associated with a gain map image");
+    return err.error_struct(handle->image.get());
+  }
+
+  *gain_map_handle = new heif_image_handle();
+  (*gain_map_handle)->image = gain_map_image;
+  (*gain_map_handle)->context = handle->context;
+
+  return Error::Ok.error_struct(handle->image.get());
+}
+
+size_t heif_image_handle_get_gain_map_metadata_size(const struct heif_image_handle* handle) {
+  std::shared_ptr<ImageMetadata> metadata = handle->image->get_gain_map_metadata();
+
+  if (metadata) {
+    return metadata->m_data.size();
+  }
+
+  return 0;
+}
+
+struct heif_error heif_image_handle_get_gain_map_metadata(const struct heif_image_handle* handle,
+                                                          void* out_data) {
+  if (!out_data) {
+    return {heif_error_Usage_error, heif_suberror_Null_pointer_argument,
+            "NULL out_data passed to heif_image_handle_get_gain_map_metadata()"};
+  }
+
+  std::shared_ptr<ImageMetadata> metadata = handle->image->get_gain_map_metadata();
+  if (!metadata) {
+    Error err(heif_error_Invalid_input, heif_suberror_No_item_data,
+              "base image handle is not associated with a gain map image");
+    return err.error_struct(handle->image.get());
+  }
+
+  std::vector<uint8_t>& buffer = metadata->m_data;
+  memcpy(out_data, buffer.data(), buffer.size());
+
+  return heif_error_success;
+}
+
+struct heif_error heif_image_handle_get_derived_image_nclx_color_profile(
+    const struct heif_image_handle* handle, struct heif_color_profile_nclx** out_data) {
+  if (!out_data) {
+    return {heif_error_Usage_error, heif_suberror_Null_pointer_argument,
+            "NULL out_data passed to heif_image_handle_get_derived_image_nclx_color_profile()"};
+  }
+
+  auto nclx_profile = handle->image->get_derived_img_color_profile_nclx();
+  Error err = nclx_profile.get_nclx_color_profile(out_data);
+
+  return err.error_struct(handle->image.get());
+}
+
+size_t heif_image_handle_get_derived_image_raw_color_profile_size(
+    const struct heif_image_handle* handle) {
+  auto profile_icc = handle->image->get_derived_img_color_profile_icc();
+  if (profile_icc) {
+    return profile_icc->get_data().size();
+  } else {
+    return 0;
+  }
+}
+
+struct heif_error heif_image_handle_get_derived_image_raw_color_profile(
+    const struct heif_image_handle* handle, void* out_data) {
+  if (!out_data) {
+    return {heif_error_Usage_error, heif_suberror_Null_pointer_argument,
+            "NULL out_data passed to heif_image_handle_get_derived_image_raw_color_profile()"};
+  }
+
+  auto raw_profile = handle->image->get_derived_img_color_profile_icc();
+  if (raw_profile) {
+    memcpy(out_data, raw_profile->get_data().data(), raw_profile->get_data().size());
+  } else {
+    Error err(heif_error_Color_profile_does_not_exist, heif_suberror_Unspecified);
+    return err.error_struct(handle->image.get());
+  }
+
+  return Error::Ok.error_struct(handle->image.get());
+}

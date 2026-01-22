@@ -1096,6 +1096,10 @@ Error HeifContext::interpret_heif_file_images()
         // these item types should have data
         return metadataResult.error();
       }
+      else if (item_type == fourcc("tmap")) {
+        // this also should have data
+        return metadataResult.error();
+      }
       else {
         // anything else is probably something that we don't understand yet
         continue;
@@ -1121,6 +1125,39 @@ Error HeifContext::interpret_heif_file_images()
           continue;
         }
         img_iter->second->add_metadata(metadata);
+      }
+      if (item_type == fourcc("tmap")) {
+        std::vector<heif_item_id> image_references = iref_box->get_references(id, fourcc("dimg"));
+        // "'tmap' item MUST be associated with 2 references to images"
+        // "'tmap' item first entry is expected to be referencing primary image"
+        // "'tmap' item reference entries MUST not be duplicate"
+        // "'tmap' item references MUST be pointing to valid image items"
+        if ((int)image_references.size() == 2 &&
+            image_references[0] == m_heif_file->get_primary_image_ID() &&
+            image_references[1] != image_references[0] &&
+            m_all_images.find(image_references[0]) != m_all_images.end() &&
+            m_all_images.find(image_references[1]) != m_all_images.end()) {
+          std::shared_ptr<ImageItem> baseItem = m_all_images.find(image_references[0])->second;
+          std::shared_ptr<ImageItem> gainmapItem = m_all_images.find(image_references[1])->second;
+
+          baseItem->set_gain_map(gainmapItem);
+
+          baseItem->add_metadata(metadata);  // gain map metadata
+
+          auto ipma = m_heif_file->get_ipma_box();
+          auto ipco = m_heif_file->get_ipco_box();
+          auto derived_image_colr = ipco->get_property_for_item_ID(id, ipma, fourcc("colr"));
+          auto colr = std::dynamic_pointer_cast<Box_colr>(derived_image_colr);
+          auto nclx =
+              std::dynamic_pointer_cast<const color_profile_nclx>(colr->get_color_profile());
+          if (nclx) {
+            baseItem->set_derived_img_color_profile_nclx(nclx->get_nclx_color_profile());
+          }
+          auto raw = std::dynamic_pointer_cast<const color_profile_raw>(colr->get_color_profile());
+          if (raw) {
+            baseItem->set_derived_img_color_profile_icc(raw);
+          }
+        }
       }
     }
   }

@@ -195,6 +195,17 @@ public:
   }
 
 
+  // --- gainmap
+
+  virtual void set_derived_img_color_profile_nclx(const nclx_profile& profile) { m_derived_color_profile_nclx = profile; }
+
+  nclx_profile get_derived_img_color_profile_nclx() const { return m_derived_color_profile_nclx; }
+
+  virtual void set_derived_img_color_profile_icc(const std::shared_ptr<const color_profile_raw>& profile) { m_derived_img_color_profile_icc = profile; }
+
+  const std::shared_ptr<const color_profile_raw>& get_derived_img_color_profile_icc() const { return m_derived_img_color_profile_icc; }
+
+
   // --- premultiplied alpha
 
   bool is_premultiplied_alpha() const { return m_premultiplied_alpha; }
@@ -462,6 +473,9 @@ private:
   bool m_premultiplied_alpha = false;
   nclx_profile m_color_profile_nclx = nclx_profile::undefined();
   std::shared_ptr<const color_profile_raw> m_color_profile_icc;
+
+  nclx_profile m_derived_color_profile_nclx = nclx_profile::undefined();
+  std::shared_ptr<const color_profile_raw> m_derived_img_color_profile_icc;
 
   uint32_t m_PixelAspectRatio_h = 1;
   uint32_t m_PixelAspectRatio_v = 1;

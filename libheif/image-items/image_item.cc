@@ -879,6 +879,17 @@ void ImageItem::set_omaf_image_projection(heif_omaf_image_projection projection)
 }
 
 
+void ImageItem::set_derived_img_color_profile_nclx(const nclx_profile& profile)
+{
+  ImageDescription::set_derived_img_color_profile_nclx(profile);
+}
+
+
+void ImageItem::set_derived_img_color_profile_icc(const std::shared_ptr<const color_profile_raw>& profile)
+{
+  ImageDescription::set_derived_img_color_profile_icc(profile);
+}
+
 Result<std::shared_ptr<HeifPixelImage>> ImageItem::decode_image(const heif_decoding_options& options,
                                                                 bool decode_tile_only, uint32_t tile_x0, uint32_t tile_y0,
                                                                 std::set<heif_item_id> processed_ids) const
