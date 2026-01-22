@@ -93,6 +93,7 @@ public:
     m_alpha_channel.reset();
     m_depth_channel.reset();
     m_aux_images.clear();
+    m_gain_map_image.reset();
   }
 
   HeifContext* get_context() { return m_heif_context; }
@@ -311,6 +312,22 @@ public:
     }
   }
 
+  // --- gain map
+
+  void set_gain_map(std::shared_ptr<ImageItem> img) { m_gain_map_image = std::move(img); }
+
+  const std::shared_ptr<ImageItem>& get_gain_map() const { return m_gain_map_image; }
+
+  std::shared_ptr<ImageMetadata> get_gain_map_metadata() {
+    if (m_gain_map_image != nullptr) {
+      for (auto it : m_metadata) {
+        if (it->item_type == "tmap") {
+          return it;
+        }
+      }
+    }
+    return nullptr;
+  }
 
   // --- metadata
 
@@ -320,8 +337,6 @@ public:
   }
 
   const std::vector<std::shared_ptr<ImageMetadata>>& get_metadata() const { return m_metadata; }
-
-
 
   // --- ImageDescription
 
@@ -340,6 +355,10 @@ public:
   void set_color_profile_icc(const std::shared_ptr<const color_profile_raw>& profile) override;
 
   void set_omaf_image_projection(heif_omaf_image_projection image_projection) override;
+
+  void set_derived_img_color_profile_nclx(const nclx_profile& profile) override;
+
+  void set_derived_img_color_profile_icc(const std::shared_ptr<const color_profile_raw>& profile) override;
 
   // --- miaf
 
@@ -478,6 +497,8 @@ private:
   bool m_is_aux_image = false;
   std::string m_aux_image_type;
   std::vector<std::shared_ptr<ImageItem>> m_aux_images;
+
+  std::shared_ptr<ImageItem> m_gain_map_image;
 
   std::vector<std::shared_ptr<ImageMetadata>> m_metadata;
 
