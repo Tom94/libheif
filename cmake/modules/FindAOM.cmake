@@ -1,4 +1,4 @@
-find_package(AOM QUIET CONFIG)
+# find_package(AOM QUIET CONFIG)
 
 if(TARGET AOM::aom)
   if(NOT AOM_FIND_QUIETLY)

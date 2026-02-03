@@ -226,7 +226,7 @@ endif()
 plugin_option(AOM_DECODER "AOM AV1 decoder" ON OFF)
 plugin_option(AOM_ENCODER "AOM AV1 encoder" ON OFF)
 if (WITH_AOM_ENCODER OR WITH_AOM_DECODER)
-    find_package(AOM)
+    # find_package(AOM)
 
     # When decoding/encoding is disabled, overwrite the *_FOUND variables, because they are used to ultimately decide what to build.
     if (NOT WITH_AOM_DECODER)
