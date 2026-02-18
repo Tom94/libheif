@@ -388,7 +388,7 @@ void heif_image_set_premultiplied_alpha(heif_image* image,
 }
 
 
-int heif_image_is_premultiplied_alpha(heif_image* image)
+int heif_image_is_premultiplied_alpha(const heif_image* image)
 {
   if (image == nullptr) {
     return 0;

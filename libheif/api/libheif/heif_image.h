@@ -395,7 +395,7 @@ void heif_image_set_premultiplied_alpha(heif_image* image,
                                         int is_premultiplied_alpha);
 
 LIBHEIF_API
-int heif_image_is_premultiplied_alpha(heif_image* image);
+int heif_image_is_premultiplied_alpha(const heif_image* image);
 
 // This function extends the padding of the image so that it has at least the given physical size.
 // The padding border is filled with the pixels along the right/bottom border.
