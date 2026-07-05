@@ -117,7 +117,7 @@ heif_security_limits tighten_image_size_limit_for_ispe(const heif_security_limit
   uint64_t allowed = padded_w * padded_h;
 
   if (result.max_image_size_pixels == 0 || allowed < result.max_image_size_pixels) {
-    result.max_image_size_pixels = allowed;
+    // result.max_image_size_pixels = allowed;
   }
   return result;
 }
