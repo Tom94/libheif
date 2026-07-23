@@ -218,7 +218,7 @@ endif()
 
 plugin_option(DAV1D "Dav1d AV1 decoder" OFF ON)
 if (WITH_DAV1D)
-    find_package(DAV1D)
+    # find_package(DAV1D)
 endif()
 
 # aom
