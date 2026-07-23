@@ -192,7 +192,7 @@ endif ()
 
 plugin_option(X264 "x264 AVC encoder" ON OFF)
 if (WITH_X264)
-    find_package(X264)
+    # find_package(X264)
 endif()
 
 # openh264 decoder
